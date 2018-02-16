@@ -1,6 +1,6 @@
 # Psst.
 
-Psst is a simple plugin to capture any text or image file that's thrown at your app. Works pretty much like how Slack handles it.
+Psst is a simple plugin to capture any text or image file that's thrown at your app.
 
 Use `psst` to handle drag-drop of files (image files) and to handle paste events (Ctrl+v).
 
