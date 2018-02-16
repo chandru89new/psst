@@ -4,6 +4,7 @@ Psst is a simple plugin to handle drag-dropped files (images) and paste events o
 
 When someone pastes an image (from clipboard / screenshot) or drops an image file on your web app, Psst will process the event and give you the data in a nice JSON format. You won't have to write the JS to check, validate and get the data &mdash; whether it is text or image.
 
+
 # How it works
 
 1. You init the plugin by calling it on some element. Typically, the `body`.
