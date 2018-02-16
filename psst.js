@@ -60,13 +60,16 @@ jQuery.fn.psst = function(){
                     psst.image = result;
                     psst.time = Date.now();
                     psst.text = null;
+                    return;
                 })
                 .catch(function(err){
                     console.log("Something went wrong when converting image data to base64.");
+                    return;
                 });
             }
             // else do nothing
             else {
+                psst = "It wasn't an image file.";
                 return;
             }
         }
@@ -76,6 +79,7 @@ jQuery.fn.psst = function(){
             psst.image = null;
             psst.time = Date.now();
             psst.text = (e.originalEvent.dataTransfer.getData('text'));
+            return;
         }
     }
 
@@ -99,9 +103,11 @@ jQuery.fn.psst = function(){
                 psst.image = result;
                 psst.time = Date.now();
                 psst.text = null;
+                return;
             })
             .catch(function(err){
                 console.log("Something went wrong while converting the data to base64.");
+                return;
             });
         }
         // else (if not image)
@@ -110,6 +116,7 @@ jQuery.fn.psst = function(){
             psst.image = null;
             psst.time = Date.now();
             psst.text = clip.getData('text');
+            return;
         }
 
     });
