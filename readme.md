@@ -46,6 +46,7 @@ Important note: Don't use any variable called `psst` in your app. Because this p
 
 - [ ] make file format options customizable 
 - [ ] handle onloadend if error
-- [ ] Release minified version
+- [ ] release minified version
+- [ ] make demo more visual
 
 [0]: http://druchan.com/psst/
