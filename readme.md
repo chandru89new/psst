@@ -85,4 +85,9 @@ OR
 error = "Couldn't detect clipboard data."
 ```
 
+### Todos
+
+- [ ] Handle errors in FileReader
+- [ ] Handle text-based files and output content as result.data
+
 [0]: http://druchan.com/psst/
