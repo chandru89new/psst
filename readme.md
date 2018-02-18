@@ -2,6 +2,10 @@
 
 This is a simple JS library to handle paste / drag-drop events in your web app.
 
+# Demo
+
+[Right here][0]
+
 ## How it works
 
 - Include the library in your web app: ```<script src="js/psst.js"></script>```
@@ -80,3 +84,5 @@ error = "No data in clipboard."
 OR
 error = "Couldn't detect clipboard data."
 ```
+
+[0]: http://druchan.com/psst/
