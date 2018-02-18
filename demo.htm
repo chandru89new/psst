@@ -46,6 +46,9 @@
             left: 0;
             right: 0;
         }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -94,7 +97,7 @@ $(document).ready(function(){
         .catch(function(error){
             $('body .result').remove();
             $('body .image').remove();
-            data = "<div class='result'>";
+            data = "<div class='result error'>";
             data += error;
             data += "</div>";
             $('body').append(data);
