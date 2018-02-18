@@ -1,125 +1,126 @@
-// init the psst object
-var psst = {};
+// prevent drag events from firing browser default behavior
+document.addEventListener('dragover', function(e){ e.preventDefault() }, false);
+document.addEventListener('dragend', function(e){ e.preventDefault() }, false);
+document.addEventListener('drop', function(e){ e.preventDefault() }, false);
 
-// the psst object will look like this:
-// psst = {
-//     time: 15123123514,
-//     isImage: true,
-//     image: "data:image/png;base64:jfklasjdflasjfalsjf",
-//     text: null,
-// }
+// psst(e)
 
-jQuery.fn.psst = function(){
+var psst = (e, allowed) => {
+    
+    return new Promise( (resolve, reject) => {
+        // if there is no event
+        if (!e) {
+            reject("psst(e) received a non-event for 'e'");
+        }
 
-    var elem = $(this);
+        var getBase64 = (data) => {
+            return new Promise((resolve, reject) => {
+                var f = new FileReader();
+                f.readAsDataURL(data);
+                f.onloadend = function(){
+                    resolve(f.result);
+                }
+            });
+        }
 
-    var getBase64 = (data) => {
-        return new Promise((resolve, reject) => {
-            var f = new FileReader();
-            f.readAsDataURL(data);
-            f.onloadend = function(){
-                resolve(f.result);
+        // find out if it's drop or paste
+        if (e.dataTransfer) {
+
+            // if it's drop, get filename
+            var filename = (e.dataTransfer.files[0]) ? e.dataTransfer.files[0].name : null;
+
+            if (!filename) {
+                reject("For some reason, the dropped file couldn't be handled.");
+                return;
             }
-        });
-    }
 
-    elem.on("dragover", function(e){
-        e.preventDefault();
-    });
-    elem.on("drop", function(e){
-        e.preventDefault();
-        // handle the dropped file
-        getDataFromDrop(e);
-    });
-    elem.on("dragend", function(e){
-        e.preventDefault();
-    });
+            // test if filetype is allowed
+            var filetypes = ['jpg', 'png', 'jpeg'];
+            if (allowed && Object.prototype.toString.call(allowed) == '[object Array]'){
+                allowed.forEach( (item) => {
+                    filetypes.push(item);
+                });
+            }
 
-    var getDataFromDrop = (e) => {
-        
-        // init
-        psst = {};
+            var extension = filename.split('.').pop().toLowerCase();
 
-        // check if it's a file
-        var isFile = (e.originalEvent.dataTransfer.files.length) ? true : false;
+            if (filetypes.indexOf(extension) < 0) {
+                reject("This filetype is not allowed.");
+                return;
+            }
 
-        // if file
-        if (isFile) {
-            
-            // check if image file
-            // if image file, get base64
-            var allowed = ['jpg', 'png', 'gif', 'jpeg'];
-            var fileExtension = e.originalEvent.dataTransfer.files[0].name.split('.').pop().toLowerCase();
-            if (allowed.indexOf(fileExtension) >= 0) {
-                
-                var data = e.originalEvent.dataTransfer.files[0];
-
-                getBase64(data)
-                .then(function(result){
-                    psst.isImage = true;
-                    psst.image = result;
-                    psst.time = Date.now();
-                    psst.text = null;
+            // test if file is image
+            var type = e.dataTransfer.files[0].type;
+            if (type.indexOf("image") >= 0) {
+                // process image file
+                getBase64(e.dataTransfer.files[0])
+                .then(function(result) {
+                    resolve({
+                        time: Date.now(),
+                        type: "image",
+                        data: result
+                    });
                     return;
                 })
-                .catch(function(err){
-                    console.log("Something went wrong when converting image data to base64.");
+                .catch(function(error) {
+                    console.error(error);
                     return;
                 });
             }
-            // else do nothing
+            // else, this is not an image file
             else {
-                psst = "It wasn't an image file.";
+                reject("This type of a file can't be processed because it's not an image.");
+                return;
+            }
+            
+
+        }
+
+        // if paste, get paste data
+        else if (e.clipboardData) {
+
+            // extract the item
+            var items = (e.clipboardData.items) ? e.clipboardData.items : false;
+
+            if (!items.length) {
+                reject("No data in clipboard.");
+                return;
+            }
+
+            // if image file
+            var type = (items[1]) ? items[1].type : items[0].type;
+            
+            if (!type) {
+                reject("Couldn't detect clipboard data.");
+                return;
+            }
+
+            if (type.indexOf("image") >= 0) {
+                // process image file, get base64 data
+                var data = (items[1]) ? items[1].getAsFile() : items[0].getAsFile();
+                getBase64(data)
+                .then(function(r){
+                    resolve({
+                        time: Date.now(),
+                        type: "image",
+                        data: r
+                    });
+                    return;
+                })
+                .catch(function(err){
+                    console.error(err);
+                    return;
+                });
+            }
+            // else, extract clipboard text data
+            else {
+                resolve({
+                    time: Date.now(),
+                    type: "text",
+                    data: e.clipboardData.getData('text')
+                });
                 return;
             }
         }
-        // if not file
-        else {
-            psst.isImage = false;
-            psst.image = null;
-            psst.time = Date.now();
-            psst.text = (e.originalEvent.dataTransfer.getData('text'));
-            return;
-        }
-    }
-
-    $(elem).on('paste', function(e){
-
-        // init
-        psst = {};
-
-        var clip = e.originalEvent.clipboardData;
-        var items = (clip.items) ? clip.items : null;
-        var type = (items[1]) ? items[1].type : items[0].type;
-
-        if (!type) return;
-
-        // if image, get base64
-        if (type.indexOf('image') === 0) {
-            var data = (items[1]) ? items[1].getAsFile() : items[0].getAsFile();
-            getBase64(data)
-            .then(function(result){
-                psst.isImage = true;
-                psst.image = result;
-                psst.time = Date.now();
-                psst.text = null;
-                return;
-            })
-            .catch(function(err){
-                console.log("Something went wrong while converting the data to base64.");
-                return;
-            });
-        }
-        // else (if not image)
-        else { 
-            psst.isImage = false;
-            psst.image = null;
-            psst.time = Date.now();
-            psst.text = clip.getData('text');
-            return;
-        }
-
     });
-
-    return;
 }

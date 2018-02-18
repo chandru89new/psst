@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang='en-us'>
+<head>
+    <meta charset=utf-8>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>psst demo</title>
+    <script src="psst.js"></script>
+    <script src="https://unpkg.com/jquery"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+            font-size: 12px;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+        }
+        div {
+            line-height: 1.7em;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            width: 50%;
+        }
+        .image {
+            text-align: center;
+        }
+        .image img {
+            max-height: 200px;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="readMe" style="text-align: center">
+        Just drag-drop or paste in this window.
+    </div>
+<script>
+$(document).ready(function(){
+    var doPsst = (e) => {
+        psst(e)
+        .then(function(result){
+            $('body .result').remove();
+            $('body .image').remove();
+            data = "<div class='result'>";
+            data += "result.time = " + "<u title='" + new Date(result.time) + "'>" + result.time + "</u>";
+            data += "<br>";
+            data += "result.type = " + result.type;
+            data += "<br>";
+            data += "result.data = " + result.data.substring(0, 50) + "... (truncated)";
+            data += "</div>";
+            $('body').append(data);
+
+            if (result.type == 'image') {
+                imgHTML = "<div class='image'>";
+                imgHTML += "<img src='" + result.data + "' />";
+                imgHTML += "</div>";
+                $('body').append(imgHTML);
+            }
+        })
+        .catch(function(error){
+            $('body .result').remove();
+            $('body .image').remove();
+            data = "<div class='result'>";
+            data += error;
+            data += "<div";
+            $('body').append(data);
+        });
+    }
+    document.addEventListener('drop', function(e){
+        doPsst(e);
+    }, false);
+
+    document.addEventListener('paste', function(e){
+        doPsst(e);
+    }, false);
+});
+</script>
+</body>
+</html>

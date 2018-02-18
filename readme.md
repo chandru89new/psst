@@ -1,52 +1,82 @@
-# Psst.
+# Psst
 
-Psst is a simple plugin to handle drag-dropped files (images) and paste events on your web app.
+This is a simple JS library to handle paste / drag-drop events in your web app.
 
-When someone pastes an image (from clipboard / screenshot) or drops an image file on your web app, Psst will process the event and give you the data in a nice JSON format. You won't have to write the JS to check, validate and get the data &mdash; whether it is text or image.
+## How it works
 
-
-# How it works
-
-1. You init the plugin by calling it on some element. Typically, the `body`.
-2. When someone pastes an image (from clipboard), the plugin will convert that into base64 and output the result in a global object `psst`. You should be able to access `psst` from anywhere in your app.
-3. Ditto for drag-drop.
-
-If someone pastes or drops plain text, Psst will handle it too.
-
-# Demo
-
-Right here: [druchan.com/psst][0]
-
-# Using Psst
+- Include the library in your web app: ```<script src="js/psst.js"></script>```
+- Add listeners for `paste` or `drop` events: `document.addEventListener('drop', function(){}, false)`
+- Inside the listener, just call `psst(e)`:
 
 ```
-$('#elem').psst();
+document.addEventListener('drop', function(e){
+    psst(e)
+    .then(function(result){
+        console.log(result);
+        // result is a JSON object that contains all data about the file/data that was just dropped/pasted into your app
+    })
+    .catch(function(error){
+        console.error(error);
+    });
+}, false);
 ```
 
-Now, anytime someone pastes or drags-n-drops into `#elem`, Psst will fire up and do the laundry.
+## What you'll find in `result` / `error`
 
-You can access the result in a global variable called `psst`. [Try the demo][0].
-
-The `psst` object looks like this:
-
+**If user pastes / drops an image file**   
 ```
-psst = {
-    time: 154545346376, // (unix time format)
-    isImage: true, // tells you if the data is an image
-    image: .... // base64 data (null if isImage is false)
-    text: ..... // if isImage is false, the data is most likely text. that's saved in this key
+result = {
+   type: "image",
+   data: "...", // base64 data of image file
+   time: 154534523423 // unix timestamp
 }
 ```
 
-Typically, `#elem` should span the whole viewport. Also typically, `#elem` is `body` or `html`.
+**If user drops a non-image file**   
+```
+error = "This type of a file can't be processed because it's not an image."
+```
 
-Important note: Don't use any variable called `psst` in your app. Because this plugin will be using it, flushing it and reusing it.
+(in the next iteration, psst() will begin to handle text/text-based files like .txt, .md, .htm).
 
-# Todo
 
-- [ ] make file format options customizable 
-- [ ] handle onloadend if error
-- [ ] release minified version
-- [ ] make demo more visual
+**If user drops a file which is not allowed**   
+```
+error = "This filetype is not allowed."
+```
 
-[0]: http://druchan.com/psst/
+By default, the filetypes allowed are `jpg`, `png` and `jpeg` but you can add more filetypes.
+
+If you want to add filetypes like `md` and `txt`, put them in an array and then, pass that into the `psst(e)` function like so:
+
+```
+arr = ['md','txt'];
+psst(e, arr)
+```
+
+Note that in this version, psst() doesn't handle text files yet. So even if you allow the file, it wont process it. Just says it can't handle the file because it's not an image. Next version will handle text files.
+
+**If user pastes an image from clipboard**
+```
+result = {
+   type: "image",
+   data: "...", // base64 data of image file
+   time: 154534523423 // unix timestamp
+}
+```
+
+**If user pastes text from clipboard**
+```
+result = {
+   type: "text",
+   data: "...", // clipboard text
+   time: 154534523423 // unix timestamp
+}
+```
+
+**If user pastes but clipboard is empty (or some other issue with clipboard data and therefore can't be read)**
+```
+error = "No data in clipboard."
+OR
+error = "Couldn't detect clipboard data."
+```
