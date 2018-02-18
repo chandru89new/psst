@@ -2,11 +2,11 @@
 
 This is a simple JS library to handle paste / drag-drop events in your web app.
 
-# Demo
+### Demo
 
 [Right here][0]
 
-## How it works
+### How it works
 
 - Include the library in your web app: ```<script src="js/psst.js"></script>```
 - Add listeners for `paste` or `drop` events: `document.addEventListener('drop', function(){}, false)`
@@ -25,7 +25,7 @@ document.addEventListener('drop', function(e){
 }, false);
 ```
 
-## What you'll find in `result` / `error`
+### What you'll find in `result` / `error`
 
 **If user pastes / drops an image file**   
 ```
@@ -85,7 +85,7 @@ OR
 error = "Couldn't detect clipboard data."
 ```
 
-### Todos
+##### Todos
 
 - [ ] Handle errors in FileReader
 - [ ] Handle text-based files and output content as result.data
