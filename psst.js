@@ -10,7 +10,10 @@ var psst = (e, allowed) => {
     return new Promise( (resolve, reject) => {
         // if there is no event
         if (!e) {
-            reject("psst(e) received a non-event for 'e'");
+            reject({
+                status: "failure",
+                message: "psst(e) received a non-event for 'e'"
+            });
             return;
         }
 
@@ -31,7 +34,10 @@ var psst = (e, allowed) => {
             var filename = (e.dataTransfer.files[0]) ? e.dataTransfer.files[0].name : null;
 
             if (!filename) {
-                reject("For some reason, the dropped file couldn't be handled.");
+                reject({
+                    status: "failure",
+                    message: "For some reason, the dropped file couldn't be handled."
+                });
                 return;
             }
 
@@ -46,7 +52,10 @@ var psst = (e, allowed) => {
             var extension = filename.split('.').pop().toLowerCase();
 
             if (filetypes.indexOf(extension) < 0) {
-                reject("This filetype is not allowed.");
+                reject({
+                    status: "failure",
+                    message: "This filetype is not allowed."
+                });
                 return;
             }
 
@@ -57,6 +66,7 @@ var psst = (e, allowed) => {
                 getBase64(e.dataTransfer.files[0])
                 .then(function(result) {
                     resolve({
+                        status: "success",
                         time: Date.now(),
                         type: "image",
                         data: result
@@ -70,7 +80,10 @@ var psst = (e, allowed) => {
             }
             // else, this is not an image file
             else {
-                reject("This type of a file can't be processed because it's not an image.");
+                reject({
+                    status: "failure",
+                    message: "This type of a file can't be processed because it's not an image."
+                });
                 return;
             }
             
@@ -84,7 +97,10 @@ var psst = (e, allowed) => {
             var items = (e.clipboardData.items) ? e.clipboardData.items : false;
 
             if (!items.length) {
-                reject("No data in clipboard.");
+                reject({
+                    status: "failure",
+                    message: "No data in clipboard."
+                });
                 return;
             }
 
@@ -92,7 +108,10 @@ var psst = (e, allowed) => {
             var type = (items[1]) ? items[1].type : items[0].type;
             
             if (!type) {
-                reject("Couldn't detect clipboard data.");
+                reject({
+                    status: "failure",
+                    message: "Couldn't detect clipboard data."
+                });
                 return;
             }
 
@@ -102,6 +121,7 @@ var psst = (e, allowed) => {
                 getBase64(data)
                 .then(function(r){
                     resolve({
+                        status: "success",
                         time: Date.now(),
                         type: "image",
                         data: r
@@ -116,6 +136,7 @@ var psst = (e, allowed) => {
             // else, extract clipboard text data
             else {
                 resolve({
+                    status: "success",
                     time: Date.now(),
                     type: "text",
                     data: e.clipboardData.getData('text')

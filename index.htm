@@ -98,7 +98,7 @@ $(document).ready(function(){
             $('body .result').remove();
             $('body .image').remove();
             data = "<div class='result error'>";
-            data += error;
+            data += error.message;
             data += "</div>";
             $('body').append(data);
         });
