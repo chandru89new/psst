@@ -11,6 +11,7 @@ var psst = (e, allowed) => {
         // if there is no event
         if (!e) {
             reject("psst(e) received a non-event for 'e'");
+            return;
         }
 
         var getBase64 = (data) => {
