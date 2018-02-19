@@ -87,6 +87,7 @@ error = "Couldn't detect clipboard data."
 
 ##### Todos
 
+- [ ] Send errors as object to reject() instead of string
 - [ ] Handle errors in FileReader
 - [ ] Handle text-based files and output content as result.data
 
