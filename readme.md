@@ -30,15 +30,19 @@ document.addEventListener('drop', function(e){
 **If user pastes / drops an image file**   
 ```
 result = {
-   type: "image",
-   data: "...", // base64 data of image file
-   time: 154534523423 // unix timestamp
+    status: "success",
+    type: "image",
+    data: "...", // base64 data of image file
+    time: 154534523423 // unix timestamp
 }
 ```
 
 **If user drops a non-image file**   
 ```
-error = "This type of a file can't be processed because it's not an image."
+error = {
+    status: "failure",
+    message: "This type of a file can't be processed because it's not an image."
+}
 ```
 
 (in the next iteration, psst() will begin to handle text/text-based files like .txt, .md, .htm).
@@ -46,7 +50,10 @@ error = "This type of a file can't be processed because it's not an image."
 
 **If user drops a file which is not allowed**   
 ```
-error = "This filetype is not allowed."
+error = {
+    status: "failure",
+    message: "This filetype is not allowed."
+}
 ```
 
 By default, the filetypes allowed are `jpg`, `png` and `jpeg` but you can add more filetypes.
@@ -63,26 +70,29 @@ Note that in this version, psst() doesn't handle text files yet. So even if you 
 **If user pastes an image from clipboard**
 ```
 result = {
-   type: "image",
-   data: "...", // base64 data of image file
-   time: 154534523423 // unix timestamp
+    status: "success",
+    type: "image",
+    data: "...", // base64 data of image file
+    time: 154534523423 // unix timestamp
 }
 ```
 
 **If user pastes text from clipboard**
 ```
 result = {
-   type: "text",
-   data: "...", // clipboard text
-   time: 154534523423 // unix timestamp
+    status: "success",
+    type: "text",
+    data: "...", // clipboard text
+    time: 154534523423 // unix timestamp
 }
 ```
 
 **If user pastes but clipboard is empty (or some other issue with clipboard data and therefore can't be read)**
 ```
-error = "No data in clipboard."
-OR
-error = "Couldn't detect clipboard data."
+error = {
+    status: "failure",
+    message: "No data in the clipboard" // or "Couldn't detect clipboard data."
+}
 ```
 
 ##### Todos
