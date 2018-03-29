@@ -21,6 +21,9 @@ var psst = (e, allowed) => {
             return new Promise((resolve, reject) => {
                 var f = new FileReader();
                 f.readAsDataURL(data);
+                if (f.error) {
+                    reject(f.error);
+                }
                 f.onloadend = function(){
                     resolve(f.result);
                 }

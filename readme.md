@@ -98,7 +98,7 @@ error = {
 ##### Todos
 
 - [x] Send errors as object to reject() instead of string
-- [ ] Handle errors in FileReader
+- [x] Handle errors in FileReader
 - [ ] Handle text-based files and output content as result.data
 
 [0]: http://druchan.com/psst/
