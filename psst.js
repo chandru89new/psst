@@ -17,10 +17,25 @@ var psst = (e, allowed) => {
             return;
         }
 
+        // function to convert an image file into base64 data string
         var getBase64 = (data) => {
             return new Promise((resolve, reject) => {
                 var f = new FileReader();
                 f.readAsDataURL(data);
+                if (f.error) {
+                    reject(f.error);
+                }
+                f.onloadend = function(){
+                    resolve(f.result);
+                }
+            });
+        }
+
+        // function to read a file input
+        var getFileAsText = (file) => {
+            return new Promise( (resolve, reject) => {
+                var f = new FileReader();
+                f.readAsText(file);
                 if (f.error) {
                     reject(f.error);
                 }
@@ -82,10 +97,20 @@ var psst = (e, allowed) => {
                 });
             }
             // else, this is not an image file
+            // meaning, the file is text
+            // so send it via psst.php and get the text data
             else {
-                reject({
-                    status: "failure",
-                    message: "This type of a file can't be processed because it's not an image."
+                getFileAsText(e.dataTransfer.files[0])
+                .then( (result) => {
+                    resolve({
+                        status: "success",
+                        time: Date.now(),
+                        type: "file",
+                        data: result
+                    })
+                })
+                .catch(function(error){
+
                 });
                 return;
             }
@@ -98,7 +123,7 @@ var psst = (e, allowed) => {
 
             // extract the item
             var items = (e.clipboardData.items) ? e.clipboardData.items : false;
-
+            
             if (!items.length) {
                 reject({
                     status: "failure",
