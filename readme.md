@@ -9,7 +9,7 @@ This is a simple JS library to handle paste / drag-drop events in your web app.
 ### How it works
 
 - Include the library in your web app: ```<script src="js/psst.js"></script>```
-- Add listeners for `paste` or `drop` events: `document.addEventListener('drop', function(){}, false)`
+- Add listeners for `paste` or `drop` events: `document.addEventListener('drop', function(e){}, false)`
 - Inside the listener, just call `psst(e)`:
 
 ```
@@ -37,16 +37,17 @@ result = {
 }
 ```
 
-**If user drops a non-image file**   
+**If user drops a text-based file (like html, md, txt etc)**   
 ```
-error = {
-    status: "failure",
-    message: "This type of a file can't be processed because it's not an image."
+result = {
+    status: "success",
+    type: "file",
+    data: "....." (truncated text content of the file),
+    time: 154534523423 // unix timestamp
 }
 ```
 
-(in the next iteration, psst() will begin to handle text/text-based files like .txt, .md, .htm).
-
+(psst() uses the HTML 5 File API to read files)
 
 **If user drops a file which is not allowed**   
 ```
@@ -64,8 +65,6 @@ If you want to add filetypes like `md` and `txt`, put them in an array and then,
 arr = ['md','txt'];
 psst(e, arr)
 ```
-
-Note that in this version, psst() doesn't handle text files yet. So even if you allow the file, it wont process it. Just says it can't handle the file because it's not an image. Next version will handle text files.
 
 **If user pastes an image from clipboard**
 ```
@@ -99,6 +98,6 @@ error = {
 
 - [x] Send errors as object to reject() instead of string
 - [x] Handle errors in FileReader
-- [ ] Handle text-based files and output content as result.data
+- [x] Handle text-based files and output content as result.data
 
 [0]: http://druchan.com/psst/
